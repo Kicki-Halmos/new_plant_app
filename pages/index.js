@@ -1,82 +1,112 @@
-import Head from 'next/head'
+import Link from 'next/link';
+import firebase from '../firebase/app';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import Auth from '../components/Auth';
+import React from 'react';
+import PlantItem from '../components/PlantItem';
+import Notification from '../components/Notification';
+import { fetchPlantList } from '../store/plant-actions';
+import { setMessaging } from '../firebase/app';
+import { getMessaging, onMessage } from 'firebase/messaging';
+import {
+  doc,
+  setDoc,
+  getDocs,
+  where,
+  collection,
+  query,
+} from 'firebase/firestore';
 
-export default function Home() {
+export default function Home(props) {
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const dispatch = useDispatch();
+  const plantList = useSelector((state) => state.plant.plantList);
+  const [user, userLoading, userError] = useAuthState(auth);
+  const [notifications, setNotifications] = useState([]);
+
+  //const isMounted = useRef(false);
+
+  const logoutHandler = () => {
+    auth.signOut();
+  };
+
+  useEffect(() => {
+    //isMounted.current = true;
+    const getMessages = async () => {
+      const token = await setMessaging();
+      setDoc(doc(db, 'users', user.uid), { token: token }, { merge: true });
+      const messaging = getMessaging();
+      onMessage(messaging, (payload) => {
+        alert(
+          payload.notification.title +
+            ' these plants needs to be watered: ' +
+            payload.notification.body
+        );
+      });
+    };
+    const getData = () => {
+      firebase.auth().onAuthStateChanged((user) => {
+        dispatch(fetchPlantList(user.uid));
+      });
+    };
+    const displayNotificiations = async () => {
+      const q = query(
+        collection(db, 'notifications'),
+        where('userId', '==', user.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const notifications = [];
+      querySnapshot.forEach((doc) => {
+        notifications.push(doc.data());
+      });
+      setNotifications(notifications);
+      console.log(notifications);
+    };
+    if (user) {
+      getMessages();
+      getData();
+      displayNotificiations();
+    }
+    return () => {
+      //isMounted.current = false;
+    };
+  }, [user]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
-
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="p-3 font-mono text-lg bg-gray-100 rounded-md">
-            pages/index.js
-          </code>
-        </p>
-
-        <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
+    <>
+      {!user && <Auth />}
+      {user && (
+        <div className='min-h-5/6 flex flex-col justify-between bg-bg'>
+          {notifications !== [] && notifications[0] && (
+            <Notification list={notifications} />
+          )}
+          <div className=''>
+            <div className='flex justify-center text-2xl mb-4'>
+              <p className='mr-2'>Add a plant</p>
+              <Link href='/add'> + </Link>
+            </div>
+            {!plantList && plantList === [] && <p>Loading...</p>}
+            {plantList !== [] && (
+              <ul className="mb-4">
+                {plantList.map((plant) => {
+                  return (
+                    <PlantItem key={plant.id} name={plant.name} id={plant.id} />
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+          <button
+            onClick={logoutHandler}
+            className='rounded bg-white p-2 border border-text px-10'
           >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            Logout
+          </button>
         </div>
-      </main>
-
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="h-4 ml-2" />
-        </a>
-      </footer>
-    </div>
-  )
+      )}
+    </>
+  );
 }
