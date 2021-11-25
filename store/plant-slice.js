@@ -4,7 +4,7 @@ const plantSlice = createSlice({
   name: 'plant',
   initialState: {
     plantList: [],
-    singlePlant: [],
+    singlePlant: {},
   },
   reducers: {
     getPlantList(state, action) {
@@ -33,6 +33,10 @@ const plantSlice = createSlice({
 
     clearPlantList(state, action) {
       state.plantList = [];
+    },
+
+    clearSinglePlant(state, actions) {
+      state.singlePlant = {};
     },
   },
 });

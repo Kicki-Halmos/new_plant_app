@@ -9,7 +9,7 @@ import PlantItem from '../components/PlantItem';
 import Notification from '../components/Notification';
 import { fetchPlantList } from '../store/plant-actions';
 import { setMessaging } from '../firebase/app';
-import { getMessaging, onMessage } from 'firebase/messaging';
+import { getMessaging, onMessage, deleteToken } from 'firebase/messaging';
 import {
   doc,
   setDoc,
@@ -18,6 +18,8 @@ import {
   collection,
   query,
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { plantActions } from '../store/plant-slice';
 
 export default function Home(props) {
   const auth = firebase.auth();
@@ -26,10 +28,13 @@ export default function Home(props) {
   const plantList = useSelector((state) => state.plant.plantList);
   const [user, userLoading, userError] = useAuthState(auth);
   const [notifications, setNotifications] = useState([]);
+  const [token, setToken] = useState('');
+  const functions = getFunctions();
 
   //const isMounted = useRef(false);
 
   const logoutHandler = () => {
+    deleteToken(token);
     auth.signOut();
   };
 
@@ -38,19 +43,18 @@ export default function Home(props) {
     const getMessages = async () => {
       const token = await setMessaging();
       setDoc(doc(db, 'users', user.uid), { token: token }, { merge: true });
+      setToken(token);
       const messaging = getMessaging();
       onMessage(messaging, (payload) => {
-        alert(
+        console.log(
           payload.notification.title +
             ' these plants needs to be watered: ' +
             payload.notification.body
         );
       });
     };
-    const getData = () => {
-      firebase.auth().onAuthStateChanged((user) => {
-        dispatch(fetchPlantList(user.uid));
-      });
+    const getData = (user) => {
+      dispatch(fetchPlantList(user.uid));
     };
     const displayNotificiations = async () => {
       const q = query(
@@ -63,12 +67,12 @@ export default function Home(props) {
         notifications.push(doc.data());
       });
       setNotifications(notifications);
-      console.log(notifications);
     };
     if (user) {
       getMessages();
-      getData();
+      getData(user);
       displayNotificiations();
+      dispatch(plantActions.clearSinglePlant());
     }
     return () => {
       //isMounted.current = false;
@@ -90,7 +94,7 @@ export default function Home(props) {
             </div>
             {!plantList && plantList === [] && <p>Loading...</p>}
             {plantList !== [] && (
-              <ul className="mb-4">
+              <ul className='mb-4'>
                 {plantList.map((plant) => {
                   return (
                     <PlantItem key={plant.id} name={plant.name} id={plant.id} />

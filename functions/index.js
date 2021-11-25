@@ -1,14 +1,9 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { deleteToken } = require('@firebase/messaging');
 admin.initializeApp();
 const db = admin.firestore();
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+
 
 function addNotificationToDb(plant) {
   db.collection('notifications')
@@ -33,6 +28,15 @@ function addNotificationToDb(plant) {
     });
 });*/
 
+exports.deleteFCMToken = functions.https.onCall((data, context)=>{
+  token = data.token;
+  deleteToken(token).then((response)=>{
+    console.log('successfully deleted token ', response);
+  }).catch((error)=>{
+    console.log('error deleting token: ' , error);
+  })
+})
+
 function addNotification(message, token) {
   const notificationMessage = {
     notification: {
@@ -48,16 +52,12 @@ function addNotification(message, token) {
         link: 'http://localhost:3000/today',
       },
     },
-    // android: {},
-    // apns: {},
     token: token,
   };
 
   console.log(notificationMessage);
-
   // Send a message to the device corresponding to the provided
   // registration token.
-
   admin
     .messaging()
     .send(notificationMessage)
@@ -71,10 +71,17 @@ function addNotification(message, token) {
 }
 
 exports.deleteNotificationsCollection = functions.pubsub
-  .schedule('every day 10:40')
+  .schedule('every day 13:25')
   .timeZone('Europe/Stockholm')
-  .onRun(  (context) => {
-    db.collection('notifications').delete();
+  .onRun((context) => {
+    db.collection('notifications')
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docs.forEach((snapshot) => {
+          snapshot.ref.delete();
+        });
+      });
+    return null;
   });
 
 exports.dummy1 = functions.pubsub
@@ -89,7 +96,6 @@ exports.dummy1 = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          const userId = user.data().uid;
 
           const data = db
             .collection('plants')
@@ -100,7 +106,7 @@ exports.dummy1 = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
-              addNotificationToDb(plant.data(), userId);
+              addNotificationToDb(plant.data());
             });
             if (message !== '') {
               addNotification(message, registrationToken);
@@ -112,44 +118,7 @@ exports.dummy1 = functions.pubsub
     return null;
   });
 
-exports.dummy2 = functions.pubsub
-  .schedule('every 2 minutes')
-  .timeZone('Europe/Stockholm')
-  .onRun((context) => {
-    console.log('This will be run every minute');
-
-    db.collection('users')
-      .get()
-      .then((snapShot) => {
-        snapShot.forEach((user) => {
-          console.log(user.data().email);
-          //const registrationToken = user.data().token;
-          const userId = user.data().uid;
-          //const userId = user.data().uid
-
-          const data = db
-            .collection('plants')
-            .where('userId', '==', user.data().uid)
-            .where('interval', '==', '1');
-          data.get().then((snapShot) => {
-            let message = '';
-
-            snapShot.forEach((plant) => {
-              message += plant.data().name + ', ';
-              //addNotificationToDb(plant.data(), userId)
-            });
-
-            if (message !== '') {
-              addNotification(message, userId);
-            }
-          });
-        });
-      });
-
-    return null;
-  });
-
-/*exports.everyDay = functions.pubsub
+exports.everyDay = functions.pubsub
   .schedule('every day 09:00')
   .timeZone('Europe/Stockholm')
   .onRun((context) => {
@@ -161,7 +130,7 @@ exports.dummy2 = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          console.log(registrationToken);
+          const userId = user.data().uid;
 
           const data = db
             .collection('plants')
@@ -172,6 +141,7 @@ exports.dummy2 = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
             addNotification(message, registrationToken, user.data().uid);
           });
@@ -179,7 +149,7 @@ exports.dummy2 = functions.pubsub
       });
 
     return null;
-  });*/
+  });
 
 exports.everySecondDay = functions.pubsub
   .schedule('0 09 */2 * *')
@@ -193,8 +163,7 @@ exports.everySecondDay = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          console.log(registrationToken);
-
+          
           const data = db
             .collection('plants')
             .where('userId', '==', user.data().uid)
@@ -204,6 +173,7 @@ exports.everySecondDay = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
 
             addNotification(message, registrationToken, user.data().uid);
@@ -226,7 +196,6 @@ exports.everyThirdDay = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          console.log(registrationToken);
 
           const data = db
             .collection('plants')
@@ -237,6 +206,7 @@ exports.everyThirdDay = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
 
             addNotification(message, registrationToken, user.data().uid);
@@ -270,6 +240,7 @@ exports.everyFourthDay = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
 
             addNotification(message, registrationToken, user.data().uid);
@@ -292,7 +263,6 @@ exports.everyWeek = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          console.log(registrationToken);
 
           const data = db
             .collection('plants')
@@ -303,6 +273,7 @@ exports.everyWeek = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
 
             addNotification(message, registrationToken, user.data().uid);
@@ -325,7 +296,6 @@ exports.everyTenthDay = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          console.log(registrationToken);
 
           const data = db
             .collection('plants')
@@ -336,6 +306,7 @@ exports.everyTenthDay = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
 
             addNotification(message, registrationToken, user.data().uid);
@@ -358,7 +329,6 @@ exports.everySecondWeek = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          console.log(registrationToken);
 
           const data = db
             .collection('plants')
@@ -369,6 +339,7 @@ exports.everySecondWeek = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
 
             addNotification(message, registrationToken, user.data().uid);
@@ -390,7 +361,6 @@ exports.everyMonth = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          console.log(registrationToken);
 
           const data = db
             .collection('plants')
@@ -401,6 +371,7 @@ exports.everyMonth = functions.pubsub
 
             snapShot.forEach((plant) => {
               message += plant.data().name + ', ';
+              addNotificationToDb(plant.data());
             });
 
             addNotification(message, registrationToken, user.data().uid);
