@@ -8,4 +8,4 @@ const firebaseConfig = new URLSearchParams({
 }).toString();
 
 // Service worker URL w/config variables
-const swUrl = `http://localhost:3000/firebase-messaging-sw.js?${firebaseConfig}`;
+const swUrl = `https://water-your-plants-sigma.vercel.app/firebase-messaging-sw.js?${firebaseConfig}`;
