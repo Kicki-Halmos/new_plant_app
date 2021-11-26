@@ -98,10 +98,10 @@ export default function Home(props) {
               </ul>
             )}
           </div>
-          <div className="sm:flex sm:justify-center">
+          <div className="w-screen sm:flex md:justify-center">
             <button
               onClick={logoutHandler}
-              className='rounded bg-white p-2 border border-text px-10 sm:w-1/4'
+              className='rounded bg-white p-2 border border-text px-10 w-full sm:w-1/4'
             >
               Logout
             </button>
