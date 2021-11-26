@@ -83,13 +83,14 @@ export default function Home(props) {
             <Notification list={notifications} />
           )}
           <div className=''>
-            <div className='flex justify-center text-2xl mb-4'>
-              <p className='mr-2'>Add a plant</p>
-              <Link href='/add'> + </Link>
+            <div className='flex justify-center text-2xl mb-4 sm:mb-8'>
+            <Link href='/add'>
+              <p className='mr-2'>Add a plant +</p>
+              </Link>
             </div >
             {!plantList && plantList === [] && <p>Loading...</p>}
             {plantList !== [] && (
-              <ul className='mb-4 sm:flex sm:justify-center sm:text-lg sm:p-4'>
+              <ul className='mb-4 flex flex-col sm:text-lg sm:mb-8'>
                 {plantList.map((plant) => {
                   return (
                     <PlantItem key={plant.id} name={plant.name} id={plant.id} />

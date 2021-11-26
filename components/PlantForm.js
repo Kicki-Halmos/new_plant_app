@@ -18,21 +18,21 @@ const PlantForm = ({ formHandler, initialValues }) => {
   };
 
   return (
-    <div className='flex flex-col text-text text-left p-8 sm:w-2/4 sm:text-lg'>
-      <label htmlFor='name'>Name</label>
+    <div className='flex flex-col text-text text-left px-8 py-2 sm:p-8 sm:w-2/4 sm:text-lg'>
+      <label className="sm:mb-2" htmlFor='name'>Name</label>
       <input
-        className='rounded mb-4 px-2 py-1 focus:outline-none focus:border focus:border-pink-800'
+        className='rounded mb-4 px-2 py-1 sm:py-2 focus:outline-none focus:border focus:border-pink-800'
         type='text'
         id='name'
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
       />
-      <label htmlFor='water'>Water</label>
+      <label className="sm:mb-2" htmlFor='water'>Water</label>
       <select
         value={waterValue}
         onChange={waterHandler}
-        className='rounded mb-4 px-2 py-1 bg-white focus:outline-none focus:border focus:border-pink-800'
+        className='rounded mb-4 px-2 py-1 sm:py-2 bg-white focus:outline-none focus:border focus:border-pink-800'
         name='water'
         id='water'
       >
@@ -45,26 +45,26 @@ const PlantForm = ({ formHandler, initialValues }) => {
         <option value='14'>Once Every Other Week</option>
         <option value='30'>Once A Month</option>
       </select>
-      <label htmlFor='fertilizer'>Fertilizer?</label>
+      <label className="sm:mb-2" htmlFor='fertilizer'>Fertilizer?</label>
       <select
         value={fertilizer}
         onChange={(e) => {
           setFertilizer(e.target.value);
         }}
-        className='rounded mb-4 px-2 py-1 bg-white focus:outline-none focus:border focus:border-pink-800'
+        className='rounded mb-4 px-2 py-1 sm:py-2 bg-white focus:outline-none focus:border focus:border-pink-800'
         name='fertilizer'
         id='fertilizer'
       >
         <option value='no'>No</option>
         <option value='yes'>Yes</option>
       </select>
-      <label htmlFor='shower'>Shower?</label>
+      <label className="sm:mb-2" htmlFor='shower'>Shower?</label>
       <select
         value={shower}
         onChange={(e) => {
           setShower(e.target.value);
         }}
-        className='rounded mb-4 px-2 py-1 bg-white focus:outline-none focus:border focus:border-pink-800'
+        className='rounded mb-4 px-2 py-1 sm:py-2 bg-white focus:outline-none focus:border focus:border-pink-800'
         name='shower'
         id='shower'
       >

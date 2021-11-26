@@ -26,13 +26,13 @@ const Detail = () => {
     <div className='sm:flex sm:justify-center'>
       {singleItem && !update && (
         <div className='grid grid-cols-2 px-12 text-text sm:w-2/4 sm:text-lg'>
-          <p className="p-2 capitalize">Name:</p>
-          <p className="p-2">{singleItem.name}</p>
-          <p className="p-2">Water:</p>
-          <p className="p-2">{singleItem.water}</p>
-          <p className="p-2">Fertilizer?</p>
-          <p className='capitalize p-2'>{singleItem.fertilizer}</p>
-          <p className="p-2">Shower?</p>
+          <p className="p-1 sm:p-2 capitalize">Name:</p>
+          <p className="p-1 sm:p-2">{singleItem.name}</p>
+          <p className="p-1 sm:p-2">Water:</p>
+          <p className="p-1 sm:p-2">{singleItem.water}</p>
+          <p className="p-1 sm:p-2">Fertilizer?</p>
+          <p className='capitalize p-1 sm:p-2'>{singleItem.fertilizer}</p>
+          <p className="p-1 sm:p-2">Shower?</p>
           <p className='capitalize'>{singleItem.shower}</p>
           <button
             onClick={() => setUpdate(true)}
