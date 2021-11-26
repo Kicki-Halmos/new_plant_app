@@ -29,9 +29,7 @@ export default function Home(props) {
   const [user, userLoading, userError] = useAuthState(auth);
   const [notifications, setNotifications] = useState([]);
   const [token, setToken] = useState('');
-  const functions = getFunctions();
-
-  //const isMounted = useRef(false);
+  //const functions = getFunctions();
 
   const logoutHandler = () => {
     deleteToken(token);
@@ -39,7 +37,6 @@ export default function Home(props) {
   };
 
   useEffect(() => {
-    //isMounted.current = true;
     const getMessages = async () => {
       const token = await setMessaging();
       setDoc(doc(db, 'users', user.uid), { token: token }, { merge: true });
@@ -74,9 +71,7 @@ export default function Home(props) {
       displayNotificiations();
       dispatch(plantActions.clearSinglePlant());
     }
-    return () => {
-      //isMounted.current = false;
-    };
+    return () => {};
   }, [user]);
 
   return (
@@ -91,10 +86,10 @@ export default function Home(props) {
             <div className='flex justify-center text-2xl mb-4'>
               <p className='mr-2'>Add a plant</p>
               <Link href='/add'> + </Link>
-            </div>
+            </div >
             {!plantList && plantList === [] && <p>Loading...</p>}
             {plantList !== [] && (
-              <ul className='mb-4'>
+              <ul className='mb-4 sm:flex sm:justify-center sm:text-lg sm:p-4'>
                 {plantList.map((plant) => {
                   return (
                     <PlantItem key={plant.id} name={plant.name} id={plant.id} />
@@ -103,12 +98,14 @@ export default function Home(props) {
               </ul>
             )}
           </div>
-          <button
-            onClick={logoutHandler}
-            className='rounded bg-white p-2 border border-text px-10'
-          >
-            Logout
-          </button>
+          <div className="sm:flex sm:justify-center">
+            <button
+              onClick={logoutHandler}
+              className='rounded bg-white p-2 border border-text px-10 sm:w-1/4'
+            >
+              Logout
+            </button>
+          </div>
         </div>
       )}
     </>

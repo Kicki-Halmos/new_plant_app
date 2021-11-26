@@ -11,7 +11,7 @@ const PlantItem = (props) => {
     dispatch(deletePlant(props.id));
   };
   return (
-    <div className='flex px-24 py-1 justify-between'>
+    <div className='flex px-24 py-1 justify-between sm:w-1/4'>
       <Link href={`/${props.id}`}>
         {props.name}
         </Link>

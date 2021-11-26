@@ -17,27 +17,23 @@ const Detail = () => {
     dispatch(fetchPlantItem(id));
   }, [id]);
 
-  const updatePlantHandler = async (
-  plant
-  ) => {  
-      await dispatch(
-      updatePlantItem(id, plant)
-    );
+  const updatePlantHandler = async (plant) => {
+    await dispatch(updatePlantItem(id, plant));
     setUpdate(false);
   };
 
   return (
-    <div>
+    <div className='sm:flex sm:justify-center'>
       {singleItem && !update && (
-        <div className='grid grid-cols-2 px-12 text-text'>
-          <p>Name:</p>
-          <p>{singleItem.name}</p>
-          <p>Water:</p>
-          <p>{singleItem.water}</p>
-          <p>Fertilizer?</p>
-          <p className="capitalize">{singleItem.fertilizer}</p>
-          <p>Shower?</p>
-          <p className="capitalize">{singleItem.shower}</p>
+        <div className='grid grid-cols-2 px-12 text-text sm:w-2/4 sm:text-lg'>
+          <p className="p-2 capitalize">Name:</p>
+          <p className="p-2">{singleItem.name}</p>
+          <p className="p-2">Water:</p>
+          <p className="p-2">{singleItem.water}</p>
+          <p className="p-2">Fertilizer?</p>
+          <p className='capitalize p-2'>{singleItem.fertilizer}</p>
+          <p className="p-2">Shower?</p>
+          <p className='capitalize'>{singleItem.shower}</p>
           <button
             onClick={() => setUpdate(true)}
             className='col-span-2 mt-2 rounded bg-white p-2 border border-text'

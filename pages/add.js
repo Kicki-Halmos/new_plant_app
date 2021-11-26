@@ -5,34 +5,29 @@ import { useRouter } from 'next/router';
 const Add = () => {
   const db = firebase.firestore();
   const router = useRouter();
-  const addPlantHandler = async (
-    name,
-    water,
-    fertilizer,
-    shower,
-    interval,
-    userId
-  ) => {
-    console.log(name);
-    await db
-      .collection('plants')
-      .doc()
-      .set(name, water, fertilizer, shower, interval, userId);
-    router.push('/');
+  const addPlantHandler = async (plant) => {
+    console.log(plant);
+    if (plant.name === '') {
+      alert('You must provide a name');
+      return;
+    } else {
+      await db.collection('plants').doc().set(plant);
+      router.push('/');
+    }
   };
   return (
-    <PlantForm
-      formHandler={(plant) =>
-        addPlantHandler(plant)
-      }
-      initialValues={{
-        name: '',
-        water: 'Every Day',
-        fertilizer: 'no',
-        shower: 'no',
-        interval: '1',
-      }}
-    />
+    <div className='sm:flex sm:justify-center'>
+      <PlantForm
+        formHandler={(plant) => addPlantHandler(plant)}
+        initialValues={{
+          name: '',
+          water: 'Every Day',
+          fertilizer: 'no',
+          shower: 'no',
+          interval: '1',
+        }}
+      />
+    </div>
   );
 };
 

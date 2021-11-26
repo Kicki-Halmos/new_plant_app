@@ -86,7 +86,7 @@ exports.deleteNotificationsCollection = functions.pubsub
       });
 
     return null;
-  });
+  });*/
 
 exports.everyDay = functions.pubsub
   .schedule('every day 09:00')
@@ -119,7 +119,7 @@ exports.everyDay = functions.pubsub
       });
 
     return null;
-  });*/
+  });
 
 exports.everySecondDay = functions.pubsub
   .schedule('0 09 */2 * *')
@@ -353,6 +353,7 @@ exports.everyMonth = functions.pubsub
   });
 
 exports.createUserDocument = functions.auth.user().onCreate((user) => {
+  console.log(user);
   db.collection('users')
     .doc(user.uid)
     .set(JSON.parse(JSON.stringify(user)));

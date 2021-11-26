@@ -18,7 +18,7 @@ const PlantForm = ({ formHandler, initialValues }) => {
   };
 
   return (
-    <div className='flex flex-col text-text text-left p-8'>
+    <div className='flex flex-col text-text text-left p-8 sm:w-2/4 sm:text-lg'>
       <label htmlFor='name'>Name</label>
       <input
         className='rounded mb-4 px-2 py-1 focus:outline-none focus:border focus:border-pink-800'
@@ -26,6 +26,7 @@ const PlantForm = ({ formHandler, initialValues }) => {
         id='name'
         value={name}
         onChange={(e) => setName(e.target.value)}
+        required
       />
       <label htmlFor='water'>Water</label>
       <select

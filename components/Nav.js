@@ -11,7 +11,7 @@ const Nav = () => {
   };*/
   return (
     <Link href='/' passHref>
-      <div className='h-1/6 text-center text-2xl pt-10 font-bold'>
+      <div className='h-1/6 text-center text-2xl pt-10 font-bold sm:text-3xl'>
         Water Your Plants ☘️
       </div>
     </Link>
