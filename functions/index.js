@@ -1,41 +1,13 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const { deleteToken } = require('@firebase/messaging');
 admin.initializeApp();
 const db = admin.firestore();
-
 
 function addNotificationToDb(plant) {
   db.collection('notifications')
     .doc()
     .set(JSON.parse(JSON.stringify(plant)));
 }
-
-/*exports.subscribeUser = functions.https.onCall((data, context) => {
-  const token = data.token;
-  const uid = context.auth.uid;
-  console.log('token ', token);
-  console.log('userId ', uid);
-
-  admin
-    .messaging()
-    .subscribeToTopic(token, uid)
-    .then((response) => {
-      console.log('succesfully subscribed to topic ', response);
-    })
-    .catch((error) => {
-      console.log(('error subscribing ', error));
-    });
-});*/
-
-exports.deleteFCMToken = functions.https.onCall((data, context)=>{
-  token = data.token;
-  deleteToken(token).then((response)=>{
-    console.log('successfully deleted token ', response);
-  }).catch((error)=>{
-    console.log('error deleting token: ' , error);
-  })
-})
 
 function addNotification(message, token) {
   const notificationMessage = {
@@ -54,8 +26,6 @@ function addNotification(message, token) {
     },
     token: token,
   };
-
-  console.log(notificationMessage);
   // Send a message to the device corresponding to the provided
   // registration token.
   admin
@@ -71,7 +41,7 @@ function addNotification(message, token) {
 }
 
 exports.deleteNotificationsCollection = functions.pubsub
-  .schedule('every day 13:25')
+  .schedule('every day 00:00')
   .timeZone('Europe/Stockholm')
   .onRun((context) => {
     db.collection('notifications')
@@ -143,7 +113,7 @@ exports.everyDay = functions.pubsub
               message += plant.data().name + ', ';
               addNotificationToDb(plant.data());
             });
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });
@@ -163,7 +133,7 @@ exports.everySecondDay = functions.pubsub
         snapShot.forEach((user) => {
           console.log(user.data().email);
           const registrationToken = user.data().token;
-          
+
           const data = db
             .collection('plants')
             .where('userId', '==', user.data().uid)
@@ -176,7 +146,7 @@ exports.everySecondDay = functions.pubsub
               addNotificationToDb(plant.data());
             });
 
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });
@@ -209,7 +179,7 @@ exports.everyThirdDay = functions.pubsub
               addNotificationToDb(plant.data());
             });
 
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });
@@ -243,7 +213,7 @@ exports.everyFourthDay = functions.pubsub
               addNotificationToDb(plant.data());
             });
 
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });
@@ -276,7 +246,7 @@ exports.everyWeek = functions.pubsub
               addNotificationToDb(plant.data());
             });
 
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });
@@ -309,7 +279,7 @@ exports.everyTenthDay = functions.pubsub
               addNotificationToDb(plant.data());
             });
 
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });
@@ -342,7 +312,7 @@ exports.everySecondWeek = functions.pubsub
               addNotificationToDb(plant.data());
             });
 
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });
@@ -374,7 +344,7 @@ exports.everyMonth = functions.pubsub
               addNotificationToDb(plant.data());
             });
 
-            addNotification(message, registrationToken, user.data().uid);
+            addNotification(message, registrationToken);
           });
         });
       });

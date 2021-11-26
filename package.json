@@ -9,18 +9,19 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
-    "next": "latest",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
     "@reduxjs/toolkit": "^1.6.2",
     "firebase": "^9.4.1",
     "functions": "^1.0.9",
+    "next": "latest",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-firebase-hooks": "^4.0.1",
     "react-firebaseui": "^6.0.0",
     "react-redux": "^7.2.6"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.6",
+    "eslint": "^7.32.0",
     "postcss": "^8.3.5",
     "tailwindcss": "^2.2.4"
   }
