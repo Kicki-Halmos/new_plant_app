@@ -21,7 +21,7 @@ function addNotification(message, token) {
         icon: '/icons/notification.png',
       },
       fcmOptions: {
-        link: 'http://localhost:3000/today',
+        link: 'https://water-your-plants-sigma.vercel.app/',
       },
     },
     token: token,
@@ -54,7 +54,7 @@ exports.deleteNotificationsCollection = functions.pubsub
     return null;
   });
 
-exports.dummy1 = functions.pubsub
+/*exports.dummy1 = functions.pubsub
   .schedule('every 2 minutes')
   .timeZone('Europe/Stockholm')
   .onRun((context) => {
@@ -119,7 +119,7 @@ exports.everyDay = functions.pubsub
       });
 
     return null;
-  });
+  });*/
 
 exports.everySecondDay = functions.pubsub
   .schedule('0 09 */2 * *')
